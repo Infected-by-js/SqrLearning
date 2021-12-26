@@ -1,7 +1,7 @@
 @import '~normalize-css';
 @import '@scss/utils/utils';
-@import '@scss/core/core';
 @import '@scss/components/components';
+@import '@scss/global/global';
 
 // /*----------MAIN-MOBILE-FIRST----------*/
 
@@ -36,6 +36,25 @@
 	width: 100%;
 	z-index: 50;
 
+	&__container {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	&__logo {
+		font-size: 1.5625rem;
+		line-height: 1.8125;
+		color: #7781d5;
+
+		b {
+			font-weight: $fw-bolder;
+			font-size: 2.125rem;
+			line-height: 2.5;
+			color: #252a51;
+		}
+	}
+
 	@include tablet {
 		height: 150px;
 		position: relative;
@@ -47,25 +66,6 @@
 	}
 }
 
-.header__container {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-}
-
-.header__logo {
-	font-size: 1.5625rem;
-	line-height: 1.8125;
-	color: #7781d5;
-}
-
-.header__logo > b {
-	font-weight: $fw-bolder;
-	font-size: 2.125rem;
-	line-height: 2.5;
-	color: #252a51;
-}
-
 .nav {
 	opacity: 0;
 	padding: 150px 0 0 0;
@@ -75,6 +75,17 @@
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.8);
+
+	@include tablet {
+		opacity: 1;
+		padding: 0;
+		position: relative;
+		display: flex;
+		align-items: center;
+		width: auto;
+		height: auto;
+		background-color: transparent;
+	}
 }
 
 .nav__list {
@@ -82,6 +93,11 @@
 	align-items: center;
 	flex-direction: column;
 	gap: 80px;
+
+	@include tablet {
+		flex-direction: row;
+		gap: 40px;
+	}
 }
 
 .nav__item {
@@ -89,6 +105,13 @@
 	font-weight: $fw-bold;
 	line-height: 1.3125rem;
 	color: $color-grey;
+
+	@include tablet {
+		font-weight: $fw-bold;
+		font-size: 1.125rem;
+		line-height: 1.3125rem;
+		color: $color-grey;
+	}
 }
 
 .nav__button {
@@ -100,23 +123,40 @@
 	border-radius: 1.125rem;
 	color: $color-white;
 	background-color: $color-pink-500;
-	box-shadow: 0px 15px 24px -7px transparent;
-	transition: background-color$transition ease-in-out;
-}
+	box-shadow: 0px 15px 24px -7px $color-pink-500;
 
-.nav__button:focus,
-.nav__button:hover {
-	background-color: $color-pink-300;
+	transition: background-color $transition ease-in-out, box-shadow $transition ease-in-out;
+
+	&:focus,
+	&:hover {
+		background-color: $color-blue;
+		box-shadow: 0px 15px 24px -7px $color-blue;
+	}
+
+	@include tablet {
+		padding: 17px 27px;
+		font-weight: $fw-bold;
+		font-size: 1.0625rem;
+		line-height: 1.25;
+		border-radius: 1.125rem;
+
+		color: $color-white;
+		background-color: $color-pink-500;
+		box-shadow: 0px 15px 24px -7px $color-pink-500;
+	}
 }
 
 .nav__link {
 	color: $color-white;
 	transition: color $transition ease-in-out;
-}
 
-.nav__link:focus,
-.nav__link:hover {
-	color: $color-pink-500;
+	&:focus,
+	&:hover {
+		color: $color-pink-500;
+	}
+	@include tablet {
+		color: $color-grey;
+	}
 }
 
 .header__burger {
@@ -125,35 +165,39 @@
 	height: 35px;
 	width: 45px;
 	cursor: pointer;
-}
 
-.header__burger > span,
-.header__burger:before,
-.header__burger:after {
-	position: absolute;
-	left: 0;
-	width: 100%;
-	height: 4px;
-	background-color: $color-pink-300;
-	transition: transform 300ms ease-in-out, opacity $transition ease-in-out;
-}
+	@include tablet {
+		display: none;
+	}
 
-.header__burger:before,
-.header__burger:after {
-	content: '';
-}
+	& > span,
+	&:before,
+	&:after {
+		position: absolute;
+		left: 0;
+		width: 100%;
+		height: 4px;
+		background-color: $color-pink-300;
+		transition: transform 300ms ease-in-out, opacity $transition ease-in-out;
+	}
 
-.header__burger:before {
-	top: 0;
-}
+	&:before,
+	&:after {
+		content: '';
+	}
 
-.header__burger > span {
-	opacity: 1;
-	top: calc(50% - 2px);
-}
+	span {
+		opacity: 1;
+		top: calc(50% - 2px);
+	}
 
-.header__burger:after {
-	bottom: 0;
+	&:before {
+		top: 0;
+	}
+
+	&:after {
+		bottom: 0;
+	}
 }
 
 ._active::before {
@@ -171,57 +215,51 @@
 }
 
 .main {
-	padding-top: 10px;
-}
+	padding-top: 60px;
 
-.main:before {
-	content: '';
-	position: fixed;
-	left: 0;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	z-index: -1;
-	display: block;
-	height: 100%;
-	background-image: url('@assets/backround.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
+	&:before {
+		content: '';
+		position: fixed;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		z-index: -1;
+		display: block;
+		height: 100%;
+		background-image: url('@assets/backround.jpg');
+		background-repeat: no-repeat;
+		background-size: cover;
 
-	filter: blur(100px);
-	-webkit-filter: blur(100px);
-	-moz-filter: blur(100px);
-	-o-filter: blur(100px);
-	-ms-filter: blur(100px);
+		filter: blur(150px);
+	}
 }
 
 .main__container {
 	display: flex;
-
+	flex-direction: column;
 	align-items: center;
+
+	@include laptop {
+		flex-direction: row;
+	}
 }
 
 .main__col_text {
 	margin-left: 106px;
-
 	margin-right: 26px;
 }
 
 .main__title {
 	margin-bottom: 13px;
-
 	font-weight: $fw-normal;
-
 	font-size: 1.25rem;
-
 	line-height: 1.4375rem;
-
 	color: $color-black;
 }
 
 .main__description {
 	min-width: 365px;
-
 	margin-bottom: 38px;
 }
 
@@ -230,7 +268,6 @@
 .description__accent_700,
 .description__accent_900 {
 	font-size: 4.375rem;
-
 	line-height: 5.125rem;
 }
 
@@ -258,157 +295,65 @@
 
 .main__buttons {
 	display: flex;
-
 	align-items: center;
 }
 
 .buttons__more {
 	margin-right: 50px;
-
 	color: $color-blue;
-
 	border-color: $color-blue;
-}
+	box-shadow: 0px 1px 2px -7px $color-blue;
+	transition: border-color $transition ease-in-out, color $transition ease-in-out,
+		box-shadow $transition ease-in-out;
 
-.buttons__more:focus,
-.buttons__more:hover {
-	color: $color-pink-300;
-
-	border-color: $color-pink-300;
+	&:focus,
+	&:hover {
+		border-color: $color-pink-300;
+		color: $color-pink-300;
+		box-shadow: 0px 1px 2px -7px $color-pink-300;
+	}
 }
 
 .buttons__trial {
 	color: $color-white;
-
 	background-color: $color-blue;
+	transition: background-color $transition ease-in-out, box-shadow $transition ease-in-out;
+
+	&:focus,
+	&:hover {
+		background-color: $color-pink-300;
+		box-shadow: 0px 15px 24px -7px $color-pink-300;
+	}
 }
 
-.buttons__trial:focus,
-.buttons__trial:hover {
-	background-color: $color-pink-300;
-}
-
-#image {
+.main__col_image {
 	display: flex;
-
 	align-items: center;
-
 	justify-content: center;
 
-	width: $max-width-image;
+	width: 400px;
+	height: 600px;
 
-	height: $max-height-image;
-
-	transform-style: preserve-3d;
-
-	transform: perspective(1000px);
-
-	transform-origin: center;
-
-	/*transition: transform 1500ms cubic-bezier(0.03,0.98,0.52,0.99), box-shadow 200ms ease;*/
+	@include tablet {
+		width: 800px;
+		height: 600px;
+	}
 }
 
-// /*----------MEDIA-TABLET----------*/
-
-// @media (min-width: 768px) {
-// 	.nav {
-
-// 								 opacity: 1;
-
-// 								 padding: 0;
-
-// 								 position: relative;
-
-// 								 display: flex;
-
-// 								 align-items: center;
-
-// 								 width: auto;
-
-// 								 height: auto;
-
-// 								 background-color: transparent;
-
-// 	}
-
-// 	.nav__list {
-
-// 								 flex-direction: row;
-
-// 	}
-
-// 	.header__burger {
-
-// 								 display: none;
-
-// 	}
-
-// 	.nav__list {
-
-// 								 display: flex;
-
-// 								 align-items: center;
-
-// 								 gap:  40px;
-
-// 	}
-
-// 	.nav__item {
-
-// 								 font-weight: $fw-bold;
-
-// 								 font-size: 1.125rem;
-
-// 								 line-height: 1.3125rem;
-
-// 								 color: $color-grey;
-
-// 	}
-
-// 	.nav__button {
-
-// 								 padding: 17px 27px;
-
-// 								 font-weight: $fw-bold;
-
-// 								 font-size: 1.0625rem;
-
-// 								 line-height: 1.25;
-
-// 								 border-radius: 1.125rem;
-
-// 								 color: $color-white;
-
-// 								 background-color: $color-pink-500;
-
-// 								 box-shadow: 0px 15px 24px -7px $color-pink-500;
-
-// 								 transition:background-color $transition) ease-in-out;
-
-// 	}
-
-// 	.nav__button:focus,
-
-// 	.nav__button:hover {
-
-// 								 background-color: $color-pink-300;
-
-// 	}
-
-// 	.nav__link {
-
-// 								 color:  $color-grey;
-
-// 								 transition:color $transition) ease-in-out;
-
-// 	}
-
-// 	.nav__link:focus,
-
-// 	.nav__link:hover {
-
-// 								 color: $color-pink-500;
-
-// 	}
-
-// }
+#main-image {
+	width: 100%;
+	height: 100%;
+	background-image: url('@assets/object.png');
+	background-size: contain;
+	background-position: center center;
+	background-repeat: no-repeat;
+	transform-style: preserve-3d;
+	transform: perspective(1000px);
+	transform-origin: center;
+	/*transition: transform 1500ms cubic-bezier(0.03,0.98,0.52,0.99), box-shadow 200ms ease;*/
+	filter: drop-shadow(0, 0, 0, red);
+	perspective: 1800;
+	transform-origin: 50% 50%;
+	transform-style: preserve-3d;
+	transition: transform 200ms ease-out;
+}

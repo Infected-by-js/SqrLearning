@@ -21,7 +21,3 @@
 		@content;
 	}
 }
-
-@mixin transition($property: all, $duration-func: linear) {
-	transition: $property $transition $duration-func;
-}
