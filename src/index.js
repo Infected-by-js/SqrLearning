@@ -7,9 +7,9 @@ class Tilt {
 	#EASING = 'cubic-bezier(0.03,0.98,0.52,0.99)';
 	#SPEED = 800;
 	#BOX_SHADOW = false;
-	#SHADOW_COLOR = 'rgba(0,0,0,0.3)';
-	#SHADOW_BLUR = '3px';
-	#SHADOW_SPREAD = '0';
+	#SHADOW_COLOR = 'rgba(0,0,0,0.25)';
+	#SHADOW_BLUR = 3;
+	#SHADOW_COEF = 0.2;
 
 	#setDefaultStyles(config = {}) {
 		this.maxAngle = config.max || this.#MAX_ANGLE;
@@ -20,7 +20,6 @@ class Tilt {
 		this.boxShadow = config.boxShadow || this.#BOX_SHADOW;
 		this.shadowColor = config.shadowColor || this.#SHADOW_COLOR;
 		this.shadowBlur = config.shadowBlur || this.#SHADOW_BLUR;
-		this.shadowSpread = config.shadowSpread || this.#SHADOW_SPREAD;
 
 		this.element.style.transformStyle = 'preserve-3d';
 		this.setShadow();
@@ -68,11 +67,10 @@ class Tilt {
 
 	setShadow(angleX = 0, angleY = 0) {
 		if (this.boxShadow) {
-			const SHADOW_COEF = 0.1;
-			const shadowParams = `${this.shadowBlur} ${this.shadowColor}`;
+			const shadowParams = `${this.shadowBlur}px ${this.shadowColor}`;
 
-			const offsetX = SHADOW_COEF * angleX;
-			const offsetY = -1 * SHADOW_COEF * angleY;
+			const offsetX = this.#SHADOW_COEF * angleX;
+			const offsetY = -1 * this.#SHADOW_COEF * angleY;
 
 			return (this.element.style.filter = `drop-shadow(${offsetY}px ${offsetX}px ${shadowParams})`);
 		}
@@ -84,11 +82,5 @@ class Tilt {
 }
 
 const mainImage = document.querySelector('#main-image');
-const settings = {
-	boxShadow: true,
-	shadowColor: 'rgba(0,0,0,0.4)',
-	shadowBlur: '3px',
-	shadowSpread: '0',
-};
 
-new Tilt(mainImage, settings);
+new Tilt(mainImage, { boxShadow: true });
