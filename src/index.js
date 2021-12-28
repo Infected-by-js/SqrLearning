@@ -1,143 +1,94 @@
 import '@scss/main';
 
-// const tiltELement = (element, config) => {
-// 	const range = 80;
-// 	let timeout = null;
+class Tilt {
+	#MAX_ANGLE = 25;
+	#PERSPECTIVE = 1500;
+	#SCALE = 1.1;
+	#EASING = 'cubic-bezier(0.03,0.98,0.52,0.99)';
+	#SPEED = 800;
+	#BOX_SHADOW = false;
+	#SHADOW_COLOR = 'rgba(0,0,0,0.3)';
+	#SHADOW_BLUR = '3px';
+	#SHADOW_SPREAD = '0';
 
-// 	const calcValue = (a, b) => {
-// 		return ((a / b) * range - range / 2).toFixed(1);
-// 	};
+	#setDefaultStyles(config = {}) {
+		this.maxAngle = config.max || this.#MAX_ANGLE;
+		this.perspective = config.perspective || this.#PERSPECTIVE;
+		this.scale = config.scale || this.#SCALE;
+		this.easing = config.easing || this.#EASING;
+		this.speed = config.speed || this.#SPEED;
+		this.boxShadow = config.boxShadow || this.#BOX_SHADOW;
+		this.shadowColor = config.shadowColor || this.#SHADOW_COLOR;
+		this.shadowBlur = config.shadowBlur || this.#SHADOW_BLUR;
+		this.shadowSpread = config.shadowSpread || this.#SHADOW_SPREAD;
 
-// 	const moveElementHandler = ({ x, y }) => {
-// 		if (timeout) {
-// 			window.cancelAnimationFrame(timeout);
-// 		}
+		this.element.style.transformStyle = 'preserve-3d';
+		this.setShadow();
+		this.setTransition();
+	}
 
-// 		console.log(timeout);
+	constructor(element, config) {
+		this.element = element;
 
-// 		timeout = window.requestAnimationFrame(() => {
-// 			const valueX = calcValue(x, window.innerWidth);
-// 			const valueY = calcValue(y, window.innerHeight);
+		this.#setDefaultStyles(config);
+		this.element.addEventListener('mousemove', this.handlerMouseMove.bind(this));
+		this.element.addEventListener('mouseenter', this.handlerMouseHover.bind(this));
+		this.element.addEventListener('mouseleave', this.handlerMouseLeave.bind(this));
+	}
 
-// 			element.style.transform = `rotateX(${valueY}deg) rotateY(${-valueX}deg)`;
-// 		});
-// 	};
+	getRotationAngle(mousePosition, elementSize) {
+		return (2 * ((mousePosition / elementSize) * this.maxAngle - this.maxAngle / 2)).toFixed(1);
+	}
 
-// 	element.addEventListener('mousemove', moveElementHandler, false);
-// };
+	handlerMouseMove(event) {
+		const angleX = this.getRotationAngle(event.offsetY, this.element.offsetHeight);
+		const angleY = -1 * this.getRotationAngle(event.offsetX, this.element.offsetWidth);
 
-const tiltELement = (element, config) => {
-	const imageWidth = element.offsetWidth;
-	const imageHeight = element.offsetHeight;
-	const centerX = element.offsetLeft + imageWidth / 2;
-	const centerY = element.offsetTop + imageHeight / 2;
+		this.setTransform({ angleX, angleY });
+		this.setShadow(angleX, angleY);
+	}
 
-	const settings = {
-		max: 25,
-		prespective: 1800,
-		scale: 1.2,
-		easing: 'cubic-bezier(0.03,0.98,0.52,0.99)',
-		speed: 1500,
-		boxShadow: false,
-		shadowColor: 'rgba(255,255,255,0.8)',
-		shadowBlur: '5px',
-		shadowSpread: '0',
-	};
+	handlerMouseHover() {
+		this.setTransform();
+		this.setShadow();
+	}
 
-	const debounce = (ms) => {
-		let isCooldown = false;
+	handlerMouseLeave() {
+		this.setTransform({ scale: 1 });
+		this.setShadow();
+	}
 
-		return (callback) => {
-			if (isCooldown) return;
+	setTransform({ angleX = 0, angleY = 0, scale = this.scale } = {}) {
+		const scaleValue = `scale3d(${scale},${scale},${scale})`;
+		const perspectiveValue = `perspective(${this.perspective}px)`;
+		const rotateValue = `rotateX(${angleX}deg) rotateY(${angleY}deg)`;
 
-			callback();
-			isCooldown = true;
+		return (this.element.style.transform = `${scaleValue} ${perspectiveValue} ${rotateValue}`);
+	}
 
-			setTimeout(() => {
-				isCooldown = false;
-			}, ms);
-		};
-	};
-	//init
-	const db = debounce(100);
+	setShadow(angleX = 0, angleY = 0) {
+		if (this.boxShadow) {
+			const SHADOW_COEF = 0.1;
+			const shadowParams = `${this.shadowBlur} ${this.shadowColor}`;
 
-	const setTransition = (isHovered) => {
-		clearTimeout(element.timer);
+			const offsetX = SHADOW_COEF * angleX;
+			const offsetY = -1 * SHADOW_COEF * angleY;
 
-		element.style.transition = `transform ${settings.speed}ms ${settings.easing}, box-shadow ${settings.speed}ms ${settings.easing}`;
-
-		if (!isHovered) {
-			element.timer = setTimeout(() => {
-				element.style.transition = '';
-				element.style.boxShadow = '';
-			}, settings.speed);
+			return (this.element.style.filter = `drop-shadow(${offsetY}px ${offsetX}px ${shadowParams})`);
 		}
-	};
+	}
 
-	const mouseOverHandler = (event) => {
-		setTransition(true);
-		element.style.transform = `perspective(${settings.prespective}px) scale3d(${settings.scale},${settings.scale},${settings.scale})`;
-		element.style.boxShadow =
-			settings.boxShadow &&
-			`0px 0px ${settings.shadowBlur} ${settings.shadowSpread} ${settings.shadowColor}`;
-	};
-
-	const mouseMoveHandler = (event) => {
-		db(() => {
-			const mouseX = event.clientX - centerX;
-			const mouseY = event.clientY - centerY;
-
-			const rotateXUncapped = (1 * settings.max * mouseY) / (imageHeight / 2);
-			const rotateYUncapped = (-1 * settings.max * mouseX) / (imageWidth / 2);
-
-			const rotateX =
-				rotateXUncapped < -settings.max
-					? -settings.max
-					: rotateXUncapped > settings.max
-					? settings.max
-					: rotateXUncapped.toFixed(2);
-			const rotateY =
-				rotateYUncapped < -settings.max
-					? -settings.max
-					: rotateYUncapped > settings.max
-					? settings.max
-					: rotateYUncapped.toFixed(2);
-
-			element.style.transform = `scale3d(${settings.scale},${settings.scale},${settings.scale})  perspective(${settings.prespective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-			console.log({ rotateX, rotateY });
-			const shadowX = (2 * rotateX) / 10;
-			const shadowY = (-2 * rotateY) / 10;
-			element.style.boxShadow =
-				settings.boxShadow &&
-				`${shadowY}px ${shadowX}px ${settings.shadowBlur} ${settings.shadowSpread} ${settings.shadowColor}`;
-		});
-	};
-
-	const mouseOutHandler = (event) => {
-		console.log('ON OUT');
-		element.style.transform = `perspective(${settings.prespective}px) scale(1)`;
-		element.style.boxShadow =
-			settings.boxShadow &&
-			`0px 0px ${settings.shadowBlur} ${settings.shadowSpread} ${settings.shadowColor}`;
-
-		setTransition(false);
-	};
-
-	element.addEventListener('mouseover', mouseOverHandler);
-	element.addEventListener('mousemove', mouseMoveHandler);
-	element.addEventListener('mouseout', mouseOutHandler);
-};
+	setTransition() {
+		this.element.style.transition = `transform ${this.speed}ms ${this.easing}, box-shadow 100ms ease-out`;
+	}
+}
 
 const mainImage = document.querySelector('#main-image');
 const settings = {
-	prespective: 1800,
-	scale: 1.2,
-	easing: 'cubic-bezier(0.03,0.98,0.52,0.99)',
-	speed: 1500,
 	boxShadow: true,
-	shadowColor: 'rgba(255,255,255,0.8)',
-	shadowBlur: '5px',
+	shadowColor: 'rgba(0,0,0,0.4)',
+	shadowBlur: '3px',
 	shadowSpread: '0',
 };
 
-tiltELement(mainImage, settings);
+new Tilt(mainImage, settings);
