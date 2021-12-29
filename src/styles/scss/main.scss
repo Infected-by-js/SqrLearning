@@ -240,6 +240,14 @@
 .main {
 	padding-top: 60px;
 
+	@include tablet {
+		padding-top: 0;
+	}
+
+	@include laptop {
+		padding-top: 80px;
+	}
+
 	&:before {
 		content: '';
 		position: fixed;
@@ -255,7 +263,6 @@
 		background-size: cover;
 
 		filter: blur(150px);
-
 		@include laptop {
 			background-image: url('@assets/backround@2x.jpg');
 		}
@@ -273,18 +280,25 @@
 }
 
 .main__col_text {
-	margin-left: 106px;
-	margin-right: 26px;
+	@include laptop {
+		margin-left: 106px;
+		margin-right: 26px;
+	}
 }
 
 .main__title {
-	margin-bottom: 13px;
+	margin-bottom: 2rem;
 	font-weight: $fw-normal;
-	font-size: 1.15rem;
-	line-height: 1.15rem;
+	font-size: 2.15rem;
+	line-height: 3rem;
 	text-align: center;
 
 	color: $color-black;
+
+	@include tablet {
+		margin-bottom: 1rem;
+		font-size: 1.25rem;
+	}
 
 	@include desktop {
 		font-size: 1.25rem;
@@ -349,8 +363,11 @@
 	gap: 2rem;
 
 	@include tablet {
-		gap: 3rem;
 		flex-direction: row;
+		gap: 3rem;
+	}
+
+	@include laptop {
 		justify-content: flex-start;
 	}
 }
@@ -398,6 +415,7 @@
 	display: none;
 	align-items: center;
 	justify-content: center;
+	z-index: 500;
 
 	@include laptop {
 		display: flex;
